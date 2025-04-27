@@ -22,7 +22,7 @@
                             @enderror
                         </div>
                         <div class="form-group">
-                            <label>Fine (in Rs.)</label>
+                            <label>Fine (in PHP.)</label>
                             <input type="number" class="form-control" name="fine" value="{{ $data->fine }}" required>
                             @error('fine')
                                 <div class="alert alert-danger" role="alert">
