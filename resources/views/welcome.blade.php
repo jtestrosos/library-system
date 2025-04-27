@@ -6,7 +6,7 @@
             <div class="row">
                 <div class="offset-md-4 col-md-4">
                     <div class="logo border border-danger">
-                        <img src="{{ asset('images/library.png') }}" alt="">
+                        <img src="{{ asset('images/Laravel_Monkes.png') }}" alt="">
                     </div>
                     <form class="yourform" action="{{ route('login') }}" method="post">
                         @csrf

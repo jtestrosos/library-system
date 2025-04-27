@@ -15,11 +15,23 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
-            'name' => 'tauseedzaman',
-            'username' => 'tauseedzaman',
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'name' => 'Rhumer',
+            'username' => 'ramenpogi',
+            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
         ];
     }
 
-
+    /**
+     * Define a "james" state.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function james()
+    {
+        return $this->state([
+            'name' => 'James',
+            'username' => 'jtestrosos',
+            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+        ]);
+    }
 }
