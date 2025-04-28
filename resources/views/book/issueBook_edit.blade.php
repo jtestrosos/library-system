@@ -49,7 +49,7 @@
                                 @if (date('Y-m-d') > $book->return_date->format('d-m-Y'))
                                     <tr>
                                         <td>Fine</td>
-                                        <td>Rs. {{ $fine }}</td>
+                                        <td>PHP. {{ $fine }}</td>
                                     </tr>
                                 @endif
                             @endif
