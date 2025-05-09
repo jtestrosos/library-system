@@ -31,11 +31,9 @@ class book_issue extends Model
         return $this->belongsTo(book::class, 'book_id', 'id');
     }
 
-
     protected $casts = [
-        'issue_date' => 'datetime:Y-m-d',
-        'return_date' => 'datetime:Y-m-d',
-        'return_day' => 'datetime:Y-m-d',
+        'issue_date' => 'datetime',
+        'return_date' => 'datetime',
+        'returned' => 'boolean',
     ];
-
 }

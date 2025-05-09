@@ -108,4 +108,7 @@ Route::prefix('student')->name('student.')->group(function () {
     Route::post('/register', [StudentAuthController::class, 'register']);
     Route::post('/logout', [StudentAuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [StudentDashboardController::class, 'index'])->middleware('student')->name('dashboard');
+    Route::post('/student/transaction/{book}', [StudentDashboardController::class, 'transaction'])->name('student.transaction');
+    Route::get('/student/dashboard', [StudentDashboardController::class, 'index'])->middleware('student')->name('student.dashboard');
+    Route::get('/auther', [auther::class, 'index']);
 });
