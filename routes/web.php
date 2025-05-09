@@ -10,8 +10,9 @@ use App\Http\Controllers\PublisherController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentAuthController;
+use App\Http\Controllers\StudentDashboardController;
 use Illuminate\Support\Facades\Route;
-use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,20 +25,20 @@ use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 |
 */
 
+// Public routes
 Route::get('/', function () {
     return view('welcome');
 })->middleware('guest');
 Route::post('/', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-// Route::post('/Change-password', [LoginController::class, 'changePassword'])->name('change_password');
 
-
+// Admin routes (protected by auth middleware)
 Route::middleware('auth')->group(function () {
-    Route::get('change-password',[dashboardController::class,'change_password_view'])->name('change_password_view');
-    Route::post('change-password',[dashboardController::class,'change_password'])->name('change_password');
+    Route::get('change-password', [dashboardController::class, 'change_password_view'])->name('change_password_view');
+    Route::post('change-password', [dashboardController::class, 'change_password'])->name('change_password');
     Route::get('/dashboard', [dashboardController::class, 'index'])->name('dashboard');
 
-    // author CRUD
+    // Author CRUD
     Route::get('/authors', [AutherController::class, 'index'])->name('authors');
     Route::get('/authors/create', [AutherController::class, 'create'])->name('authors.create');
     Route::get('/authors/edit/{auther}', [AutherController::class, 'edit'])->name('authors.edit');
@@ -45,7 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/authors/delete/{id}', [AutherController::class, 'destroy'])->name('authors.destroy');
     Route::post('/authors/create', [AutherController::class, 'store'])->name('authors.store');
 
-    // publisher crud
+    // Publisher CRUD
     Route::get('/publishers', [PublisherController::class, 'index'])->name('publishers');
     Route::get('/publisher/create', [PublisherController::class, 'create'])->name('publisher.create');
     Route::get('/publisher/edit/{publisher}', [PublisherController::class, 'edit'])->name('publisher.edit');
@@ -61,10 +62,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/category/delete/{id}', [CategoryController::class, 'destroy'])->name('category.destroy');
     Route::post('/category/create', [CategoryController::class, 'store'])->name('category.store');
 
-
-
-
-    // books CRUD
+    // Books CRUD
     Route::get('/books', [BookController::class, 'index'])->name('books');
     Route::get('/book/create', [BookController::class, 'create'])->name('book.create');
     Route::get('/book/edit/{book}', [BookController::class, 'edit'])->name('book.edit');
@@ -72,17 +70,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/book/delete/{id}', [BookController::class, 'destroy'])->name('book.destroy');
     Route::post('/book/create', [BookController::class, 'store'])->name('book.store');
 
-    // students CRUD
+    // Students CRUD
     Route::get('/students', [StudentController::class, 'index'])->name('students');
     Route::get('/student/create', [StudentController::class, 'create'])->name('student.create');
     Route::get('/student/edit/{student}', [StudentController::class, 'edit'])->name('student.edit');
     Route::post('/student/update/{id}', [StudentController::class, 'update'])->name('student.update');
-    Route::post('/student/delete/{id}', [StudentController::class, 'destroy'])->name('student.destroy');
+    Route::post('/student/delete/{id}', [StudentController::class, 'destroy'])->name('student.delete');
     Route::post('/student/create', [StudentController::class, 'store'])->name('student.store');
     Route::get('/student/show/{id}', [StudentController::class, 'show'])->name('student.show');
 
-
-
+    // Book Issues
     Route::get('/book_issue', [BookIssueController::class, 'index'])->name('book_issued');
     Route::get('/book-issue/create', [BookIssueController::class, 'create'])->name('book_issue.create');
     Route::get('/book-issue/edit/{id}', [BookIssueController::class, 'edit'])->name('book_issue.edit');
@@ -90,6 +87,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/book-issue/delete/{id}', [BookIssueController::class, 'destroy'])->name('book_issue.destroy');
     Route::post('/book-issue/create', [BookIssueController::class, 'store'])->name('book_issue.store');
 
+    // Reports
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
     Route::get('/reports/Date-Wise', [ReportsController::class, 'date_wise'])->name('reports.date_wise');
     Route::post('/reports/Date-Wise', [ReportsController::class, 'generate_date_wise_report'])->name('reports.date_wise_generate');
@@ -97,6 +95,17 @@ Route::middleware('auth')->group(function () {
     Route::post('/reports/monthly-Wise', [ReportsController::class, 'generate_month_wise_report'])->name('reports.month_wise_generate');
     Route::get('/reports/not-returned', [ReportsController::class, 'not_returned'])->name('reports.not_returned');
 
+    // Settings
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
     Route::post('/settings', [SettingsController::class, 'update'])->name('settings');
+});
+
+// Student routes
+Route::prefix('student')->name('student.')->group(function () {
+    Route::get('/login', [StudentAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [StudentAuthController::class, 'login']);
+    Route::get('/register', [StudentAuthController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [StudentAuthController::class, 'register']);
+    Route::post('/logout', [StudentAuthController::class, 'logout'])->name('logout');
+    Route::get('/dashboard', [StudentDashboardController::class, 'index'])->middleware('student')->name('dashboard');
 });
