@@ -49,7 +49,11 @@
                                 @if (date('Y-m-d') > $book->return_date->format('d-m-Y'))
                                     <tr>
                                         <td>Fine</td>
+<<<<<<< HEAD
                                         <td>₱ {{ $fine }}</td>
+=======
+                                        <td>PHP. {{ $fine }}</td>
+>>>>>>> 10b6078ed472db9c7d497bcb687f4de6f91923ac
                                     </tr>
                                 @endif
                             @endif

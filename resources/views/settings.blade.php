@@ -22,7 +22,11 @@
                             @enderror
                         </div>
                         <div class="form-group">
+<<<<<<< HEAD
                             <label>Fine (in ₱.)</label>
+=======
+                            <label>Fine (in PHP.)</label>
+>>>>>>> 10b6078ed472db9c7d497bcb687f4de6f91923ac
                             <input type="number" class="form-control" name="fine" value="{{ $data->fine }}" required>
                             @error('fine')
                                 <div class="alert alert-danger" role="alert">
