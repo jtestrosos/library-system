@@ -70,15 +70,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/book/delete/{id}', [BookController::class, 'destroy'])->name('book.destroy');
     Route::post('/book/create', [BookController::class, 'store'])->name('book.store');
 
-    // Students CRUD
-    Route::get('/students', [StudentController::class, 'index'])->name('students');
-    Route::get('/student/create', [StudentController::class, 'create'])->name('student.create');
-    Route::get('/student/edit/{student}', [StudentController::class, 'edit'])->name('student.edit');
-    Route::post('/student/update/{id}', [StudentController::class, 'update'])->name('student.update');
-    Route::post('/student/delete/{id}', [StudentController::class, 'destroy'])->name('student.delete');
-    Route::post('/student/create', [StudentController::class, 'store'])->name('student.store');
-    Route::get('/student/show/{id}', [StudentController::class, 'show'])->name('student.show');
-
     // Book Issues
     Route::get('/book_issue', [BookIssueController::class, 'index'])->name('book_issued');
     Route::get('/book-issue/create', [BookIssueController::class, 'create'])->name('book_issue.create');
@@ -109,6 +100,24 @@ Route::prefix('student')->name('student.')->group(function () {
     Route::post('/logout', [StudentAuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [StudentDashboardController::class, 'index'])->middleware('student')->name('dashboard');
     Route::post('/student/transaction/{book}', [StudentDashboardController::class, 'transaction'])->name('student.transaction');
-    Route::get('/student/dashboard', [StudentDashboardController::class, 'index'])->middleware('student')->name('student.dashboard');
-    Route::get('/auther', [auther::class, 'index']);
+    Route::get('/dashboard', [StudentDashboardController::class, 'index'])->middleware('student')->name('student.dashboard');
+
+    // Use resource route for students within the student prefix
+    Route::resource('students', StudentController::class)->names([
+        'index' => 'students.index',
+        'create' => 'students.create',
+        'store' => 'students.store',
+        'show' => 'students.show',
+        'edit' => 'students.edit',
+        'update' => 'students.update',
+        'destroy' => 'students.destroy',
+    ])->parameters(['students' => 'student']);
+
+    // Remove individual student routes as they are now handled by the resource
+    // Route::get('/student/create', [StudentController::class, 'create'])->name('student.create');
+    // Route::get('/student/edit/{student}', [StudentController::class, 'edit'])->name('student.edit');
+    // Route::post('/student/update/{id}', [StudentController::class, 'update'])->name('student.update');
+    // Route::post('/student/delete/{id}', [StudentController::class, 'destroy'])->name('student.delete');
+    // Route::post('/student/create', [StudentController::class, 'store'])->name('student.store');
+    // Route::get('/student/show/{id}', [StudentController::class, 'show'])->name('student.show');
 });

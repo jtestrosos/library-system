@@ -7,12 +7,18 @@
                     <h2 class="admin-heading">All Students</h2>
                 </div>
                 <div class="offset-md-6 col-md-2">
-                    <a class="add-new" href="{{ route('student.create') }}">Add Student</a>
+                    <a class="add-new" href="{{ route('student.students.create') }}">Add Student</a>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <div class="message"></div>
+                    <div class="message">
+                        @if (session('success'))
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+                    </div>
                     <table class="content-table">
                         <thead>
                             <th>S.No</th>
@@ -33,17 +39,16 @@
                                     <td>{{ $student->phone }}</td>
                                     <td>{{ $student->email }}</td>
                                     <td class="view">
-                                        <button data-sid='{{ $student->id }}>'
-                                            class="btn btn-primary view-btn">View</button>
+                                        <button data-sid="{{ $student->id }}" class="btn btn-primary view-btn">View</button>
                                     </td>
                                     <td class="edit">
-                                        <a href="{{ route('student.edit', $student) }}>" class="btn btn-success">Edit</a>
+                                        <a href="{{ route('student.students.edit', $student->id) }}" class="btn btn-success">Edit</a>
                                     </td>
                                     <td class="delete">
-                                        <form action="{{ route('student.destroy', $student->id) }}" method="post"
-                                            class="form-hidden">
-                                            <button class="btn btn-danger delete-student">Delete</button>
+                                        <form action="{{ route('student.destroy', $student->id) }}" method="post" class="form-hidden">
                                             @csrf
+                                            @method('DELETE')
+                                            <button class="btn btn-danger delete-student">Delete</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -54,12 +59,10 @@
                             @endforelse
                         </tbody>
                     </table>
-                    {{ $students->links('vendor/pagination/bootstrap-4') }}
+                    {{ $students->links('vendor.pagination.bootstrap-4') }}
                     <div id="modal">
                         <div id="modal-form">
-                            <table cellpadding="10px" width="100%">
-
-                            </table>
+                            <table cellpadding="10px" width="100%"></table>
                             <div id="close-btn">X</div>
                         </div>
                     </div>
@@ -67,46 +70,41 @@
             </div>
         </div>
     </div>
+
     <script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
     <script type="text/javascript">
-        //Show shudent detail
+        // Show student detail
         $(".view-btn").on("click", function() {
             var student_id = $(this).data("sid");
             $.ajax({
-                url: "http://127.0.0.1:8000/student/show/"+student_id,
+                url: "{{ route('student.students.show', '') }}/" + student_id,
                 type: "get",
                 success: function(student) {
                     console.log(student);
-                    form ="<tr><td>Student Name :</td><td><b>"+student['name']+"</b></td></tr><tr><td>Address :</td><td><b>"+student['address']+"</b></td></tr><tr><td>Gender :</td><td><b>"+ student['gender']+ "</b></td></tr><tr><td>Class :</td><td><b>"+ student['class']+ "</b></td></tr><tr><td>Age :</td><td><b>"+ student['age']+ "</b></td></tr><tr><td>Phone :</td><td><b>"+ student['phone']+ "</b></td></tr><tr><td>Email :</td><td><b>"+ student['email']+ "</b></td></tr>";
-          console.log(form);
-
+                    form = "<tr><td>Student Name :</td><td><b>" + student['name'] + "</b></td></tr>" +
+                           "<tr><td>Address :</td><td><b>" + (student['address'] || 'N/A') + "</b></td></tr>" +
+                           "<tr><td>Gender :</td><td><b>" + student['gender'] + "</b></td></tr>" +
+                           "<tr><td>Class :</td><td><b>" + (student['class'] || 'N/A') + "</b></td></tr>" +
+                           "<tr><td>Age :</td><td><b>" + (student['age'] || 'N/A') + "</b></td></tr>" +
+                           "<tr><td>Phone :</td><td><b>" + student['phone'] + "</b></td></tr>" +
+                           "<tr><td>Email :</td><td><b>" + student['email'] + "</b></td></tr>";
                     $("#modal-form table").html(form);
                     $("#modal").show();
                 }
             });
         });
 
-        //Hide modal box
+        // Hide modal box
         $('#close-btn').on("click", function() {
             $("#modal").hide();
         });
 
-        //delete student script
-        $(".delete-student").on("click", function() {
-            var s_id = $(this).data("sid");
-            $.ajax({
-                url: "delete-student.php",
-                type: "POST",
-                data: {
-                    sid: s_id
-                },
-                success: function(data) {
-                    $(".message").html(data);
-                    setTimeout(function() {
-                        window.location.reload();
-                    }, 2000);
-                }
-            });
+        // Delete student
+        $(".delete-student").on("click", function(e) {
+            e.preventDefault();
+            if (confirm("Are you sure you want to delete this student?")) {
+                $(this).closest("form").submit();
+            }
         });
     </script>
 @endsection

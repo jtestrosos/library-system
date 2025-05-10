@@ -3,101 +3,77 @@
 namespace App\Http\Controllers;
 
 use App\Models\student;
-use App\Http\Requests\StorestudentRequest;
-use App\Http\Requests\UpdatestudentRequest;
+use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        return view('student.index', [
-            'students' => student::Paginate(5)
-        ]);
+        $students = student::paginate(10);
+        return view('student.index', compact('students'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         return view('student.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StorestudentRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StorestudentRequest $request)
+    public function store(Request $request)
     {
-        student::create($request->validated());
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:students,email',
+            'password' => 'required|string|min:8',
+            'gender' => 'required|string|in:male,female,other',
+            'phone' => 'required|string',
+            'address' => 'nullable|string',
+            'class' => 'nullable|string',
+            'age' => 'nullable|integer',
+        ]);
 
-        return redirect()->route('students');
+        student::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => bcrypt($validated['password']),
+            'gender' => $validated['gender'],
+            'phone' => $validated['phone'],
+            'address' => $validated['address'],
+            'class' => $validated['class'],
+            'age' => $validated['age'],
+        ]);
+
+        return redirect()->route('student.students.index')->with('success', 'Student created successfully!');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\student  $student
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function show(student $student)
     {
-        $student = student::find($id)->first();
-        return $student;
+        return response()->json($student);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\student  $student
-     * @return \Illuminate\Http\Response
-     */
     public function edit(student $student)
     {
-        return view('student.edit', [
-            'student' => $student
+        return view('student.edit', compact('student'));
+    }
+
+    public function update(Request $request, student $student)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:students,email,' . $student->id,
+            'gender' => 'required|string|in:male,female,other',
+            'phone' => 'required|string',
+            'address' => 'nullable|string',
+            'class' => 'nullable|string',
+            'age' => 'nullable|integer',
         ]);
+
+        $student->update($validated);
+        return redirect()->route('student.students.index')->with('success', 'Student updated successfully!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdatestudentRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdatestudentRequest $request, $id)
+    public function destroy(student $student)
     {
-        $student = student::find($id);
-        $student->name = $request->name;
-        $student->address = $request->address;
-        $student->gender = $request->gender;
-        $student->class = $request->class;
-        $student->age = $request->age;
-        $student->phone = $request->phone;
-        $student->email = $request->email;
-        $student->save();
-
-        return redirect()->route('students');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\student  $student
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        student::find($id)->delete();
-        return redirect()->route('students');
+        $student->delete();
+        return redirect()->route('student.students.index')->with('success', 'Student deleted successfully!');
     }
 }
