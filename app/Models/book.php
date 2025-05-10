@@ -2,46 +2,25 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class book extends Model
+class Book extends Model
 {
-    use HasFactory;
-    protected $guarded = [];
+    protected $table = 'books';
+    protected $fillable = ['title', 'auther_id', 'publisher_id', 'status'];
 
-    /**
-     * Get the auther that owns the book
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function auther(): BelongsTo
+    public function auther()
     {
-        return $this->belongsTo(auther::class,'auther_id','id');
+        return $this->belongsTo(Auther::class, 'auther_id');
     }
 
-    /**
-     * Get the category that owns the book
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function category(): BelongsTo
+    public function publisher()
     {
-        return $this->belongsTo(category::class);
+        return $this->belongsTo(Publisher::class, 'publisher_id');
     }
 
-    /**
-     * Get the publisher that owns the book
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function publisher(): BelongsTo
+    public function bookIssues()
     {
-        return $this->belongsTo(publisher::class);
+        return $this->hasMany(Book_Issue::class, 'book_id'); // Updated from BookIssue to Book_Issue
     }
-
-
-
 }
