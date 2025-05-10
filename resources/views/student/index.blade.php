@@ -7,7 +7,8 @@
                     <h2 class="admin-heading">All Students</h2>
                 </div>
                 <div class="offset-md-6 col-md-2">
-                    <a class="add-new" href="{{ route('student.students.create') }}">Add Student</a>
+                    <!-- Dynamically determine the route prefix -->
+                    <a class="add-new" href="{{ route((auth()->check() && auth()->guard('web')->check() ? 'students' : 'student.students') . '.create') }}">Add Student</a>
                 </div>
             </div>
             <div class="row">
@@ -42,10 +43,10 @@
                                         <button data-sid="{{ $student->id }}" class="btn btn-primary view-btn">View</button>
                                     </td>
                                     <td class="edit">
-                                        <a href="{{ route('student.students.edit', $student->id) }}" class="btn btn-success">Edit</a>
+                                        <a href="{{ route((auth()->check() && auth()->guard('web')->check() ? 'students' : 'student.students') . '.edit', $student->id) }}" class="btn btn-success">Edit</a>
                                     </td>
                                     <td class="delete">
-                                        <form action="{{ route('student.destroy', $student->id) }}" method="post" class="form-hidden">
+                                        <form action="{{ route((auth()->check() && auth()->guard('web')->check() ? 'students' : 'student.students') . '.destroy', $student->id) }}" method="post" class="form-hidden">
                                             @csrf
                                             @method('DELETE')
                                             <button class="btn btn-danger delete-student">Delete</button>
@@ -77,7 +78,7 @@
         $(".view-btn").on("click", function() {
             var student_id = $(this).data("sid");
             $.ajax({
-                url: "{{ route('student.students.show', '') }}/" + student_id,
+                url: "{{ route((auth()->check() && auth()->guard('web')->check() ? 'students' : 'student.students') . '.show', '') }}/" + student_id,
                 type: "get",
                 success: function(student) {
                     console.log(student);

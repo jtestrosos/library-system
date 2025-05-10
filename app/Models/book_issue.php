@@ -2,38 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class book_issue extends Model
+class Book_Issue extends Model // Renamed from BookIssue to Book_Issue
 {
-    use HasFactory;
-    protected $guarded = [];
+    protected $table = 'book_issues'; // Ensure this matches your database table name
+    protected $primaryKey = 'id'; // Adjust if different
+    protected $fillable = ['student_id', 'book_id', 'issue_date', 'return_date', 'returned']; // Add fields as per your schema
 
-    /**
-     * Get the student that owns the book_issue
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function student(): BelongsTo
+    // Relationship with Book
+    public function book()
     {
-        return $this->belongsTo(student::class, 'student_id', 'id');
+        return $this->belongsTo(Book::class, 'book_id');
     }
 
-    /**
-     * Get the book that owns the book_issue
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function book(): BelongsTo
+    // Relationship with Student (if applicable)
+    public function student()
     {
-        return $this->belongsTo(book::class, 'book_id', 'id');
+        return $this->belongsTo(Student::class, 'student_id');
     }
-
-    protected $casts = [
-        'issue_date' => 'datetime',
-        'return_date' => 'datetime',
-        'returned' => 'boolean',
-    ];
 }

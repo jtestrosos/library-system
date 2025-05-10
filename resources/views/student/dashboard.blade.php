@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
+<!-- resources/views/student/dashboard.blade.php -->
+@extends('layouts.app')
+
+@section('content')
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-10">
@@ -19,12 +14,12 @@
                         <p>Email: {{ $student->email }}</p>
                         <p>Class: {{ $student->class }}</p>
 
-                        <!-- Authors Section (View Only) -->
-                        <h5 class="mt-4">Authors</h5>
+                        <!-- Authers Section (View Only) -->
+                        <h5 class="mt-4">Authers</h5>
                         <div class="list-group">
-                            @foreach($authors as $author)
+                            @foreach($authers as $auther)
                                 <a href="#" class="list-group-item list-group-item-action disabled" tabindex="-1" aria-disabled="true">
-                                    {{ $author->name }}
+                                    {{ $auther->name }}
                                 </a>
                             @endforeach
                         </div>
@@ -44,7 +39,7 @@
                         <div class="list-group">
                             @foreach($books as $book)
                                 <div class="list-group-item">
-                                    <strong>{{ $book->title }}</strong> by {{ $book->author->name }}
+                                    <strong>{{ $book->title }}</strong> by {{ $book->auther->name }}
                                     <form action="{{ route('student.transaction', $book->id) }}" method="POST" class="d-inline ms-3" style="display: inline;">
                                         @csrf
                                         <button type="submit" name="action" value="borrow" class="btn btn-sm btn-primary">Borrow</button>
@@ -92,15 +87,9 @@
                                 @endforeach
                             </tbody>
                         </table>
-
-                        <form method="POST" action="{{ route('student.logout') }}" class="mt-4">
-                            @csrf
-                            <button type="submit" class="btn btn-danger">Logout</button>
-                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</body>
-</html>
+@endsection

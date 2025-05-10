@@ -42,7 +42,9 @@ class StudentController extends Controller
             'age' => $validated['age'],
         ]);
 
-        return redirect()->route('student.students.index')->with('success', 'Student created successfully!');
+        // Redirect based on user role
+        $route = auth()->check() && auth()->guard('web')->check() ? 'students.index' : 'student.students.index';
+        return redirect()->route($route)->with('success', 'Student created successfully!');
     }
 
     public function show(student $student)
@@ -68,12 +70,18 @@ class StudentController extends Controller
         ]);
 
         $student->update($validated);
-        return redirect()->route('student.students.index')->with('success', 'Student updated successfully!');
+
+        // Redirect based on user role
+        $route = auth()->check() && auth()->guard('web')->check() ? 'students.index' : 'student.students.index';
+        return redirect()->route($route)->with('success', 'Student updated successfully!');
     }
 
     public function destroy(student $student)
     {
         $student->delete();
-        return redirect()->route('student.students.index')->with('success', 'Student deleted successfully!');
+
+        // Redirect based on user role
+        $route = auth()->check() && auth()->guard('web')->check() ? 'students.index' : 'student.students.index';
+        return redirect()->route($route)->with('success', 'Student deleted successfully!');
     }
 }

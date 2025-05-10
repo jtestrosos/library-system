@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ asset('css/bootstrap.css') }}"> <!-- Bootstrap -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }} "> <!-- Custom stlylesheet -->
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}"> <!-- Custom stylesheet -->
 </head>
 
 <body>
@@ -25,13 +25,17 @@
                     <div class="dropdown">
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Hi {{ auth()->user()->name }}
+                            Hi {{ auth()->guard('web')->check() ? auth()->user()->name : (auth()->guard('student')->check() ? auth()->guard('student')->user()->name : 'Guest') }}
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item" href="{{ route('change_password') }}">Change Password</a>
-                            <a class="dropdown-item" href="#" onclick="document.getElementById('logoutForm').submit()">Log Out</a>
+                            @if(auth()->guard('web')->check())
+                                <a class="dropdown-item" href="{{ route('change_password') }}">Change Password</a>
+                                <a class="dropdown-item" href="#" onclick="document.getElementById('logoutForm').submit()">Log Out</a>
+                            @elseif(auth()->guard('student')->check())
+                                <a class="dropdown-item" href="#" onclick="document.getElementById('logoutForm').submit()">Log Out</a>
+                            @endif
                         </div>
-                        <form method="post" id="logoutForm" action="{{ route('logout') }}">
+                        <form method="post" id="logoutForm" action="{{ auth()->guard('web')->check() ? route('logout') : route('student.logout') }}">
                             @csrf
                         </form>
                     </div>
@@ -45,15 +49,21 @@
             <div class="row">
                 <div class="col-md-12">
                     <ul class="menu">
-                        <li><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                        <li><a href="{{ route('authors') }}">Authors</a></li>
-                        <li><a href="{{ route('publishers') }}">Publishers</a></li>
-                        <li><a href="{{ route('categories') }}">Categories</a></li>
-                        <li><a href="{{ route('books') }}">Books</a></li>
-                        <li><a href="{{ route('students') }}">Reg Students</a></li>
-                        <li><a href="{{ route('book_issued') }}">Book Issue</a></li>
-                        <li><a href="{{ route('reports') }}">Reports</a></li>
-                        <li><a href="{{ route('settings') }}">Settings</a></li>
+                        @if(auth()->guard('web')->check())
+                            <!-- Admin Menu -->
+                            <li><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                            <li><a href="{{ route('authors.index') }}">Authors</a></li>
+                            <li><a href="{{ route('publishers.index') }}">Publishers</a></li>
+                            <li><a href="{{ route('categories.index') }}">Categories</a></li>
+                            <li><a href="{{ route('books.index') }}">Books</a></li>
+                            <li><a href="{{ route('students.index') }}">Students</a></li>
+                            <li><a href="{{ route('book_issued') }}">Book Issue</a></li>
+                            <li><a href="{{ route('reports') }}">Reports</a></li>
+                            <li><a href="{{ route('settings') }}">Settings</a></li>
+                        @elseif(auth()->guard('student')->check())
+                            <!-- Student Menu -->
+                            <li><a href="{{ route('student.dashboard') }}">Dashboard</a></li>
+                        @endif
                     </ul>
                 </div>
             </div>

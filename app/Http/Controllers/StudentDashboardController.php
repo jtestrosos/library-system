@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\student;
-use App\Models\book;
-use App\Models\author;
-use App\Models\publisher;
-use App\Models\book_issue;
+use App\Models\Student;
+use App\Models\Book;
+use App\Models\Auther;
+use App\Models\Publisher;
+use App\Models\Book_Issue; // Updated from BookIssue to Book_Issue
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,14 +19,14 @@ class StudentDashboardController extends Controller
         }
     
         $student = Auth::guard('student')->user();
-        $books = book::where('status', 'Y')->get(); // Available books for transaction
-        $authors = author::all();
-        $publishers = publisher::all();
-        $bookIssues = book_issue::where('student_id', $student->id)
+        $books = Book::where('status', 'Y')->get(); // Available books for transaction
+        $authers = Auther::all();
+        $publishers = Publisher::all();
+        $bookIssues = Book_Issue::where('student_id', $student->id) // Updated from BookIssue to Book_Issue
             ->with(['book' => fn ($query) => $query->select('id', 'title')])
             ->get();
     
-        return view('student.dashboard', compact('student', 'books', 'authors', 'publishers', 'bookIssues'));
+        return view('student.dashboard', compact('student', 'books', 'authers', 'publishers', 'bookIssues'));
     }
 
     public function transaction(Request $request, $bookId)
@@ -35,9 +35,9 @@ class StudentDashboardController extends Controller
             return redirect()->route('student.login');
         }
 
-        $book = book::findOrFail($bookId);
+        $book = Book::findOrFail($bookId);
         if ($request->input('action') == 'borrow') {
-            book_issue::create([
+            Book_Issue::create([ // Updated from BookIssue to Book_Issue
                 'student_id' => Auth::guard('student')->user()->id,
                 'book_id' => $bookId,
                 'issue_date' => now(),

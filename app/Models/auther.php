@@ -2,21 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class auther extends Model
+class Auther extends Model
 {
-    use HasFactory;
+    protected $table = 'authers'; // Ensure this matches your database table name
+    protected $primaryKey = 'id'; // Adjust if different
+    protected $fillable = ['name', 'email']; // Add fields as per your schema
 
-    protected $guarded = [];
-
-    // Specify the correct table name
-    protected $table = 'authers';
-
-    // Define the relationship with books
+    // Relationship with Book (if applicable)
     public function books()
     {
-        return $this->hasMany(book::class, 'auther_id');
+        return $this->hasMany(Book::class, 'auther_id'); // Adjust foreign key if different
     }
 }
