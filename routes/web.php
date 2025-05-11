@@ -77,7 +77,9 @@ Route::prefix('student')->name('student.')->group(function () {
     Route::get('/dashboard', [StudentDashboardController::class, 'index'])->middleware('student')->name('dashboard');
     Route::post('/transaction/{book}', [StudentDashboardController::class, 'transaction'])->name('transaction');
 
-    // Students CRUD with resource route
+    // Add books index route for students
+    Route::get('/books', [StudentBookController::class, 'index'])->name('books.index');
+
     Route::resource('students', StudentController::class)->names([
         'index' => 'students.index',
         'create' => 'students.create',
