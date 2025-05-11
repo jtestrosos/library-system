@@ -118,6 +118,6 @@ Route::prefix('student')->name('student.')->group(function () {
         'show' => 'students.show',
         'edit' => 'students.edit',
         'update' => 'students.update',
-        'destroy' => 'students.destroy',
+        'delete' => 'students.delete',
     ])->parameters(['students' => 'student']);
 });
