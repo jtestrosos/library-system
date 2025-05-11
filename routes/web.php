@@ -12,6 +12,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentAuthController;
 use App\Http\Controllers\StudentDashboardController;
+use App\Http\Controllers\StudentBookController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
