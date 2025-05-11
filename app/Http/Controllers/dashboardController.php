@@ -17,7 +17,7 @@ class dashboardController extends Controller
     public function index()
     {
         return view('dashboard', [
-            'authors' => auther::count(),
+            'authers' => auther::count(),
             'publishers' => publisher::count(),
             'categories' => category::count(),
             'books' => book::count(),

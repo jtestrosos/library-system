@@ -1,31 +1,21 @@
+<!-- resources/views/category/edit.blade.php -->
 @extends('layouts.app')
+
 @section('content')
-<div id="admin-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <h2 class="admin-heading">Update Category</h2>
+    <div class="container mt-5">
+        <h1>Edit Category</h1>
+        <form action="{{ route('categories.update', $category->id) }}" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="form-group">
+                <label for="name">Category Name</label>
+                <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $category->name) }}">
+                @error('name')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
-        </div>
-        <div class="row">
-            <div class="offset-md-3 col-md-6">
-                <form class="yourform" action="{{ route('category.update', $category->id) }}" method="post"
-                    autocomplete="off">
-                    @csrf
-                    <div class="form-group">
-                        <label>Category Name</label>
-                        <input type="text" class="form-control @error('name') isinvalid @enderror" name="name"
-                            value="{{ $category->name }}" required>
-                        @error('name')
-                            <div class="alert alert-danger" role="alert">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-                    <input type="submit" name="submit" class="btn btn-danger" value="Update" required>
-                </form>
-            </div>
-        </div>
+            <button type="submit" class="btn btn-primary mt-3">Update</button>
+            <a href="{{ route('categories.index') }}" class="btn btn-secondary mt-3">Cancel</a>
+        </form>
     </div>
-</div>
 @endsection

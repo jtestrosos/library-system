@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Book extends Model
 {
     protected $table = 'books';
-    protected $fillable = ['title', 'auther_id', 'publisher_id', 'status'];
+    protected $fillable = ['title', 'auther_id', 'publisher_id', 'category_id', 'status'];
 
     public function auther()
     {
@@ -19,8 +19,13 @@ class Book extends Model
         return $this->belongsTo(Publisher::class, 'publisher_id');
     }
 
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
+
     public function bookIssues()
     {
-        return $this->hasMany(Book_Issue::class, 'book_id'); // Updated from BookIssue to Book_Issue
+        return $this->hasMany(Book_Issue::class, 'book_id');
     }
 }

@@ -2,83 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\publisher;
-use App\Http\Requests\StorepublisherRequest;
-use App\Http\Requests\UpdatepublisherRequest;
+use App\Models\Publisher;
+use Illuminate\Http\Request;
 
 class PublisherController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        return view('publisher.index', [
-            'publishers' => publisher::Paginate(5)
-        ]);
+        $publishers = Publisher::paginate(5); // Matches the 5 items per page in the screenshot
+        return view('publisher.index', compact('publishers'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         return view('publisher.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StorepublisherRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StorepublisherRequest $request)
+    public function store(Request $request)
     {
-        publisher::create($request->validated());
-        return redirect()->route('publishers');
+        $request->validate(['name' => 'required|string|max:255']);
+        Publisher::create($request->all());
+        return redirect()->route('publishers.index')->with('success', 'Publisher added successfully');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\publisher  $publisher
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(publisher $publisher)
+    public function edit($id)
     {
-        return view('publisher.edit', [
-            'publisher' => $publisher
-        ]);
+        $publisher = Publisher::findOrFail($id);
+        return view('publisher.edit', compact('publisher'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdatepublisherRequest  $request
-     * @param  \App\Models\publisher  $publisher
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdatepublisherRequest $request, $id)
+    public function update(Request $request, $id)
     {
-        $publisher = publisher::find($id);
-        $publisher->name = $request->name;
-        $publisher->save();
-
-        return redirect()->route('publishers');
+        $request->validate(['name' => 'required|string|max:255']);
+        $publisher = Publisher::findOrFail($id);
+        $publisher->update($request->all());
+        return redirect()->route('publishers.index')->with('success', 'Publisher updated successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        publisher::find($id)->delete();
-        return redirect()->route('publishers');
+        $publisher = Publisher::findOrFail($id);
+        $publisher->delete();
+        return redirect()->route('publishers.index')->with('success', 'Publisher deleted successfully');
     }
 }

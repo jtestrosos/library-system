@@ -54,7 +54,7 @@
                             <li><a href="{{ route('dashboard') }}">Dashboard</a></li>
                             <li><a href="{{ route('authors.index') }}">Authors</a></li>
                             <li><a href="{{ route('publishers.index') }}">Publishers</a></li>
-                            <li><a href="{{ route('categories.index') }}">Categories</a></li>
+                            <li><a href="{{ route('categories.index') }}">Categories</a></li> <!-- Already correct -->
                             <li><a href="{{ route('books.index') }}">Books</a></li>
                             <li><a href="{{ route('students.index') }}">Students</a></li>
                             <li><a href="{{ route('book_issued') }}">Book Issue</a></li>

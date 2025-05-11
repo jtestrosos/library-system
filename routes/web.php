@@ -27,22 +27,22 @@ Route::middleware('auth')->group(function () {
     Route::post('change-password', [dashboardController::class, 'change_password'])->name('change_password');
     Route::get('/dashboard', [dashboardController::class, 'index'])->name('dashboard');
 
-    // Author CRUD (converted to resource route)
+    // Author CRUD
     Route::resource('authors', AutherController::class);
 
-    // Publisher CRUD (converted to resource route)
+    // Publisher CRUD
     Route::resource('publishers', PublisherController::class);
 
-    // Category CRUD (converted to resource route)
+    // Category CRUD
     Route::resource('categories', CategoryController::class);
 
-    // Books CRUD (converted to resource route)
+    // Books CRUD
     Route::resource('books', BookController::class);
 
-    // Students CRUD with resource route
+    // Students CRUD
     Route::resource('students', StudentController::class);
 
-    // Book Issues (converted to resource route with custom names)
+    // Book Issues
     Route::resource('book_issues', BookIssueController::class)->names([
         'index' => 'book_issued',
         'create' => 'book_issue.create',
@@ -74,16 +74,5 @@ Route::prefix('student')->name('student.')->group(function () {
     Route::post('/register', [StudentAuthController::class, 'register']);
     Route::post('/logout', [StudentAuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [StudentDashboardController::class, 'index'])->middleware('student')->name('dashboard');
-    Route::post('/transaction/{book}', [StudentDashboardController::class, 'transaction'])->name('transaction'); // Fixed route path
-
-    // Students CRUD with resource route
-    Route::resource('students', StudentController::class)->names([
-        'index' => 'students.index',
-        'create' => 'students.create',
-        'store' => 'students.store',
-        'show' => 'students.show',
-        'edit' => 'students.edit',
-        'update' => 'students.update',
-        'destroy' => 'students.destroy',
-    ])->parameters(['students' => 'student']);
+    Route::post('/transaction/{book}', [StudentDashboardController::class, 'transaction'])->name('transaction');
 });

@@ -11,7 +11,7 @@
                 <div class="col-md-3 mb-4">
                     <div class="card" style="width: 14rem; margin: 0 auto;">
                         <div class="card-body text-center">
-                            <p class="card-text">{{ $authors }}</p>
+                            <p class="card-text">{{ $authers }}</p>
                             <h5 class="card-title mb-0">Authors Listed</h5>
                         </div>
                     </div>
