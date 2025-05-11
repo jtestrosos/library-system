@@ -40,7 +40,7 @@
                                         <a href="{{ route('student.edit', $student) }}>" class="btn btn-success">Edit</a>
                                     </td>
                                     <td class="delete">
-                                        <form action="{{ route('student.destroy', $student->id) }}" method="post"
+                                        <form action="{{ route('student.delete', $student->id) }}" method="post"
                                             class="form-hidden">
                                             <button class="btn btn-danger delete-student">Delete</button>
                                             @csrf

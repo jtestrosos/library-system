@@ -108,7 +108,16 @@ Route::prefix('student')->name('student.')->group(function () {
     Route::post('/register', [StudentAuthController::class, 'register']);
     Route::post('/logout', [StudentAuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [StudentDashboardController::class, 'index'])->middleware('student')->name('dashboard');
-    Route::post('/student/transaction/{book}', [StudentDashboardController::class, 'transaction'])->name('student.transaction');
-    Route::get('/student/dashboard', [StudentDashboardController::class, 'index'])->middleware('student')->name('student.dashboard');
-    Route::get('/auther', [auther::class, 'index']);
+    Route::post('/transaction/{book}', [StudentDashboardController::class, 'transaction'])->name('transaction');
+
+    // Students CRUD with resource route
+    Route::resource('students', StudentController::class)->names([
+        'index' => 'students.index',
+        'create' => 'students.create',
+        'store' => 'students.store',
+        'show' => 'students.show',
+        'edit' => 'students.edit',
+        'update' => 'students.update',
+        'destroy' => 'students.destroy',
+    ])->parameters(['students' => 'student']);
 });
