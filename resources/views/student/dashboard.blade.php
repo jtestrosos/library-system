@@ -13,11 +13,11 @@
         <!-- Debug Output -->
         <div class="row">
             <div class="col-md-12 mb-4">
-                <h4>Debug Data</h4>
                 <p>Authers Count: {{ $authers->count() }}</p>
                 <p>Publishers Count: {{ $publishers->count() }}</p>
                 <p>Books Count: {{ $books->count() }}</p>
-                <p>Book Issues Count: {{ $book_issue->count() }}</p>
+                <p>Book Issues Count: {{ $bookIssues->count() }}</p>
+                <p>Purchased Books Count: {{ $purchasedBooks->count() }}</p> <!-- Added for debugging -->
             </div>
         </div>
 
@@ -48,8 +48,8 @@
                 @if ($books->isEmpty())
                     <p>No books available at the moment.</p>
                 @else
-                    <table class="table table-bordered">
-                        <thead>
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-light">
                             <tr>
                                 <th>Title</th>
                                 <th>Actions</th>
@@ -60,16 +60,8 @@
                                 <tr>
                                     <td>{{ $book->title ?? 'N/A' }}</td>
                                     <td>
-                                        <form action="{{ route('student.transaction', $book->id) }}" method="POST" style="display:inline;">
-                                            @csrf
-                                            <input type="hidden" name="action" value="borrow">
-                                            <button type="submit" class="btn btn-primary btn-sm">Borrow</button>
-                                        </form>
-                                        <form action="{{ route('student.transaction', $book->id) }}" method="POST" style="display:inline;">
-                                            @csrf
-                                            <input type="hidden" name="action" value="buy">
-                                            <button type="submit" class="btn btn-success btn-sm">Buy</button>
-                                        </form>
+                                        <a href="{{ route('student.transaction.confirm', ['bookId' => $book->id, 'action' => 'borrow']) }}" class="btn btn-primary btn-sm">Borrow</a>
+                                        <a href="{{ route('student.transaction.confirm', ['bookId' => $book->id, 'action' => 'buy']) }}" class="btn btn-success btn-sm">Buy</a>
                                     </td>
                                 </tr>
                             @endforeach
@@ -79,48 +71,74 @@
             </div>
         </div>
 
-        <!-- Book Issues Section with Deadlines and Fines -->
+  <!-- Book Issues Section with Deadlines and Fines -->
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h3>Your Book Issues</h3>
+        <!-- Debug Output for Book Issues -->
+        <p>Debug: Book Issues Count: {{ $bookIssues->count() }}</p>
+        <p>Debug: Book Issues Data: {{ json_encode($bookIssues->toArray()) }}</p>
+        @if ($bookIssues->isEmpty())
+            <p>No books issued.</p>
+        @else
+            <table class="table table-bordered table-hover">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Book Title</th>
+                        <th>Issue Date</th>
+                        <th>Return Date</th>
+                        <th>Days Remaining</th>
+                        <th>Fine (if Overdue)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($bookIssues as $issue)
+                        @if (!$issue->returned)
+                            <tr>
+                                <td>{{ $issue->book->title ?? 'N/A' }}</td>
+                                <td>{{ \Carbon\Carbon::parse($issue->issue_date)->format('Y-m-d') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($issue->return_date)->format('Y-m-d') }}</td>
+                                <td class="{{ $issue->days_remaining <= 3 && $issue->days_remaining >= 0 ? 'text-warning' : ($issue->days_remaining < 0 ? 'text-danger' : '') }}">
+                                    {{ $issue->days_remaining >= 0 ? $issue->days_remaining . ' days' : 'Overdue by ' . abs($issue->days_remaining) . ' days' }}
+                                </td>
+                                <td class="{{ $issue->fine > 0 ? 'text-danger' : '' }}">
+                                    {{ $issue->fine > 0 ? '₱' . number_format($issue->fine, 2) : 'None' }}
+                                </td>
+                            </tr>
+                        @endif
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+    </div>
+</div>
+
+        <!-- Purchased Books Section -->
         <div class="row">
             <div class="col-md-12 mb-4">
-                <h3>Your Book Issues</h3>
-                @if ($book_issue->isEmpty())
-                    <p>No books issued.</p>
+                <h3>Your Purchased Books</h3>
+                <!-- Debug Output for Purchased Books -->
+                <p>Purchased Books Count: {{ $purchasedBooks->count() }}</p>
+                @if ($purchasedBooks->isEmpty())
+                    <p>No books purchased.</p>
                 @else
-                    <table class="table table-bordered">
-                        <thead>
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-light">
                             <tr>
                                 <th>Book Title</th>
-                                <th>Issue Date</th>
-                                <th>Return Date</th>
-                                <th>Days Remaining</th>
-                                <th>Fine (if Overdue)</th>
+                                <th>Purchase Date</th>
+                                <th>Price</th>
+                                <th>Payment Method</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @php
-                                $finePerDay = 1; // $1 per day fine
-                                $warningDays = 3; // Highlight if due within 3 days
-                                $today = now();
-                            @endphp
-                            @foreach ($book_issue as $issue)
-                                @if (!$issue->returned) <!-- Show only pending (not returned) books -->
-                                    @php
-                                        $returnDate = \Carbon\Carbon::parse($issue->return_date);
-                                        $daysRemaining = $today->diffInDays($returnDate, false); // Negative if overdue
-                                        $fine = $daysRemaining < 0 ? abs($daysRemaining) * $finePerDay : 0;
-                                    @endphp
-                                    <tr>
-                                        <td>{{ $issue->book->title ?? 'N/A' }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($issue->issue_date)->format('Y-m-d') }}</td>
-                                        <td>{{ $returnDate->format('Y-m-d') }}</td>
-                                        <td class="{{ $daysRemaining <= $warningDays && $daysRemaining >= 0 ? 'text-warning' : ($daysRemaining < 0 ? 'text-danger' : '') }}">
-                                            {{ $daysRemaining >= 0 ? $daysRemaining . ' days' : 'Overdue by ' . abs($daysRemaining) . ' days' }}
-                                        </td>
-                                        <td class="{{ $fine > 0 ? 'text-danger' : '' }}">
-                                            {{ $fine > 0 ? '$' . $fine : 'None' }}
-                                        </td>
-                                    </tr>
-                                @endif
+                            @foreach ($purchasedBooks as $purchase)
+                                <tr>
+                                    <td>{{ $purchase->book_title ?? 'N/A' }}</td>
+                                    <td>{{ $purchase->purchase_date ? \Carbon\Carbon::parse($purchase->purchase_date)->format('Y-m-d') : 'N/A' }}</td>
+                                    <td>{{ $purchase->price ? '₱' . number_format($purchase->price, 2) : 'N/A' }}</td>
+                                    <td>{{ $purchase->payment_method ?? 'N/A' }}</td>
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>

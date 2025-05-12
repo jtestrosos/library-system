@@ -74,19 +74,24 @@ Route::prefix('student')->name('student.')->group(function () {
     Route::get('/register', [StudentAuthController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [StudentAuthController::class, 'register']);
     Route::post('/logout', [StudentAuthController::class, 'logout'])->name('logout');
-    Route::get('/dashboard', [StudentDashboardController::class, 'index'])->middleware('student')->name('dashboard');
-    Route::post('/transaction/{book}', [StudentDashboardController::class, 'transaction'])->name('transaction');
 
-    // Add books index route for students
-    Route::get('/books', [StudentBookController::class, 'index'])->name('books.index');
+    // Student dashboard routes with middleware
+    Route::group(['middleware' => ['auth:student']], function () {
+        Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/transaction/{bookId}/{action}', [StudentDashboardController::class, 'transactionConfirm'])->name('transaction.confirm');
+        Route::post('/transaction/{bookId}', [StudentDashboardController::class, 'transaction'])->name('transaction');
 
-    Route::resource('students', StudentController::class)->names([
-        'index' => 'students.index',
-        'create' => 'students.create',
-        'store' => 'students.store',
-        'show' => 'students.show',
-        'edit' => 'students.edit',
-        'update' => 'students.update',
-        'delete' => 'students.delete',
-    ])->parameters(['students' => 'student']);
+        // Add books index route for students
+        Route::get('/books', [StudentBookController::class, 'index'])->name('books.index');
+
+        Route::resource('students', StudentController::class)->names([
+            'index' => 'students.index',
+            'create' => 'students.create',
+            'store' => 'students.store',
+            'show' => 'students.show',
+            'edit' => 'students.edit',
+            'update' => 'students.update',
+            'delete' => 'students.delete',
+        ])->parameters(['students' => 'student']);
+    });
 });

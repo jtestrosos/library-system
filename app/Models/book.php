@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Book extends Model
 {
     protected $table = 'books';
-    protected $fillable = ['title', 'auther_id', 'publisher_id', 'category_id', 'status'];
+    protected $fillable = ['name', 'auther_id', 'publisher_id', 'category_id', 'status']; // Changed 'title' to 'name'
 
     public function auther()
     {
@@ -27,5 +27,11 @@ class Book extends Model
     public function bookIssues()
     {
         return $this->hasMany(Book_Issue::class, 'book_id');
+    }
+
+    // Optional: Map 'name' to 'title' for compatibility with existing UI code
+    public function getTitleAttribute()
+    {
+        return $this->attributes['name'];
     }
 }
