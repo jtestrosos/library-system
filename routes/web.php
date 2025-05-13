@@ -107,8 +107,9 @@ Route::prefix('student')->name('student.')->group(function () {
     Route::get('/register', [StudentAuthController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [StudentAuthController::class, 'register']);
     Route::post('/logout', [StudentAuthController::class, 'logout'])->name('logout');
-    Route::get('/dashboard', [StudentDashboardController::class, 'index'])->middleware('student')->name('dashboard');
-    Route::post('/transaction/{book}', [StudentDashboardController::class, 'transaction'])->name('transaction');
+    Route::get('/dashboard', [StudentDashboardController::class, 'index'])->middleware('auth:student')->name('dashboard'); // Changed to 'auth:student'
+    Route::post('/transaction/{bookId}', [StudentDashboardController::class, 'transaction'])->name('transaction'); // Changed to {bookId}
+    Route::post('/return/{issueId}', [StudentDashboardController::class, 'returnBook'])->name('return'); // Added return route
 
     // Students CRUD with resource route
     Route::resource('students', StudentController::class)->names([
