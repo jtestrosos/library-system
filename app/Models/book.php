@@ -2,46 +2,36 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class book extends Model
+class Book extends Model
 {
-    use HasFactory;
-    protected $guarded = [];
+    protected $table = 'books';
+    protected $fillable = ['name', 'auther_id', 'publisher_id', 'category_id', 'status']; // Changed 'title' to 'name'
 
-    /**
-     * Get the auther that owns the book
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function auther(): BelongsTo
+    public function auther()
     {
-        return $this->belongsTo(auther::class,'auther_id','id');
+        return $this->belongsTo(Auther::class, 'auther_id');
     }
 
-    /**
-     * Get the category that owns the book
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function category(): BelongsTo
+    public function publisher()
     {
-        return $this->belongsTo(category::class);
+        return $this->belongsTo(Publisher::class, 'publisher_id');
     }
 
-    /**
-     * Get the publisher that owns the book
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function publisher(): BelongsTo
+    public function category()
     {
-        return $this->belongsTo(publisher::class);
+        return $this->belongsTo(Category::class, 'category_id');
     }
 
+    public function bookIssues()
+    {
+        return $this->hasMany(Book_Issue::class, 'book_id');
+    }
 
-
+    // Optional: Map 'name' to 'title' for compatibility with existing UI code
+    public function getTitleAttribute()
+    {
+        return $this->attributes['name'];
+    }
 }

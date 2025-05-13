@@ -1,66 +1,33 @@
 @extends('layouts.app')
-@section('content')
 
-    <div id="admin-content">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-3">
-                    <h2 class="admin-heading">All Books</h2>
-                </div>
-                <div class="offset-md-7 col-md-2">
-                    <a class="add-new" href="{{ route('book.create') }}">Add Book</a>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="message"></div>
-                    <table class="content-table">
-                        <thead>
-                            <th>S.No</th>
-                            <th>Book Name</th>
-                            <th>Category</th>
-                            <th>Author</th>
-                            <th>Publisher</th>
-                            <th>Status</th>
-                            <th>Edit</th>
-                            <th>Delete</th>
-                        </thead>
-                        <tbody>
-                            @forelse ($books as $book)
-                                <tr>
-                                    <td class="id">{{ $book->id }}</td>
-                                    <td>{{ $book->name }}</td>
-                                    <td>{{ $book->category->name }}</td>
-                                    <td>{{ $book->auther->name }}</td>
-                                    <td>{{ $book->publisher->name }}</td>
-                                    <td>
-                                        @if ($book->status == 'Y')
-                                            <span class='badge badge-success'>Available</span>
-                                        @else
-                                            <span class='badge badge-danger'>Issued</span>
-                                        @endif
-                                    </td>
-                                    <td class="edit">
-                                        <a href="{{ route('book.edit', $book) }}" class="btn btn-success">Edit</a>
-                                    </td>
-                                    <td class="delete">
-                                        <form action="{{ route('book.destroy', $book) }}" method="post"
-                                            class="form-hidden">
-                                            <button class="btn btn-danger delete-book">Delete</button>
-                                            @csrf
-                                        </form>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="8">No Books Found</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                    {{ $books->links('vendor/pagination/bootstrap-4') }}
-                </div>
-            </div>
-        </div>
+@section('content')
+    <div class="container mt-5">
+        <h1>All Books</h1>
+        <a href="{{ route('books.create') }}" class="btn btn-primary mb-3">Add Book</a>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th>Book Title</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($books as $book)
+                    <tr>
+                        <td>{{ $book->id }}</td>
+                        <td>{{ $book->title }}</td>
+                        <td><a href="{{ route('books.edit', $book->id) }}" class="btn btn-success btn-sm">Edit</a></td>
+                        <form action="{{ route('books.destroy', $book->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <td><button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button></td>
+                        </form>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        {{ $books->links() }}
     </div>
 @endsection

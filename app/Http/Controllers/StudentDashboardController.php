@@ -25,7 +25,7 @@ class StudentDashboardController extends Controller
         $authers = Auther::all();
         $publishers = Publisher::all();
         $bookIssues = Book_Issue::where('student_id', $student->id)
-            ->with(['book' => fn ($query) => $query->select('id', 'title')])
+            ->with(['book' => fn($query) => $query->select('id', 'title')])
             ->get();
         $purchasedBooks = Purchase::where('student_id', $student->id)->get();
 
@@ -50,28 +50,23 @@ class StudentDashboardController extends Controller
         }
 
         $book = Book::findOrFail($bookId);
+        $student = Auth::guard('student')->user();
+
         Log::info('Transaction Confirm Page', [
             'book_id' => $bookId,
             'action' => $action,
             'book_data' => $book->toArray(),
+            'student_id' => $student->id,
         ]);
-        return view('student.transaction_confirm', compact('book', 'action'));
+
+        return view('student.transaction_confirm', compact('book', 'action', 'student'));
     }
 
-    public function transaction(Request $request, $bookId)
+    public function processTransaction(Request $request, $bookId)
     {
         if (!Auth::guard('student')->check()) {
             return redirect()->route('student.login');
         }
-
-        Log::info('Transaction Attempt', [
-            'book_id' => $bookId,
-            'action' => $request->input('action'),
-            'user_id' => $request->input('user_id'),
-            'full_name' => $request->input('full_name'),
-            'return_date' => $request->input('return_date'),
-            'request_all' => $request->all(),
-        ]);
 
         try {
             $student = Auth::guard('student')->user();
@@ -82,7 +77,6 @@ class StudentDashboardController extends Controller
                 'student_name' => $student->name,
             ]);
 
-            // Temporarily bypass validation to test receipt rendering
             Log::info('Skipping Validation for Debugging');
 
             if ($request->input('action') === 'borrow') {
@@ -92,7 +86,7 @@ class StudentDashboardController extends Controller
                     'student_id' => $student->id,
                     'book_id' => $bookId,
                     'issue_date' => now(),
-                    'return_date' => $request->input('return_date', now()->addDays(7)), // Fallback to 7 days
+                    'return_date' => $request->input('return_date', now()->addDays(7)),
                     'returned' => false,
                 ]);
 
@@ -127,7 +121,10 @@ class StudentDashboardController extends Controller
                 'error' => $e->getMessage(),
                 'stack_trace' => $e->getTraceAsString(),
             ]);
-            return redirect()->route('student.dashboard')->withErrors(['error' => 'Transaction failed: ' . $e->getMessage()]);
+
+            return redirect()->route('student.dashboard')->withErrors([
+                'error' => 'Transaction failed: ' . $e->getMessage(),
+            ]);
         }
     }
 }

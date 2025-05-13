@@ -2,40 +2,40 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Carbon\Carbon;
 
-class book_issue extends Model
+class Book_Issue extends Model
 {
-    use HasFactory;
-    protected $guarded = [];
+    protected $table = 'book_issues';
+    protected $fillable = ['student_id', 'book_id', 'issue_date', 'return_date', 'returned'];
 
-    /**
-     * Get the student that owns the book_issue
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function student(): BelongsTo
+    public function book()
     {
-        return $this->belongsTo(student::class, 'student_id', 'id');
+        return $this->belongsTo(Book::class, 'book_id');
     }
 
-    /**
-     * Get the book that owns the book_issue
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function book(): BelongsTo
+    public function student()
     {
-        return $this->belongsTo(book::class, 'book_id', 'id');
+        return $this->belongsTo(Student::class, 'student_id');
     }
 
+    public function getDaysRemainingAttribute()
+    {
+        if ($this->returned) {
+            return 0;
+        }
+        $today = Carbon::now();
+        $returnDate = Carbon::parse($this->return_date);
+        return $today->diffInDays($returnDate, false); // Negative if overdue
+    }
 
-    protected $casts = [
-        'issue_date' => 'datetime:Y-m-d',
-        'return_date' => 'datetime:Y-m-d',
-        'return_day' => 'datetime:Y-m-d',
-    ];
-
+    public function getFineAttribute()
+    {
+        if ($this->returned || $this->getDaysRemainingAttribute() >= 0) {
+            return 0;
+        }
+        $finePerDay = 1; // ₱1 per day
+        return abs($this->getDaysRemainingAttribute()) * $finePerDay;
+    }
 }
