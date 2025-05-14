@@ -168,7 +168,7 @@
                     <textarea class="form-control" id="address" name="address" required>{{ old('address') }}</textarea>
                 </div>
                 <div class="mb-3">
-                    <label for="class" class="form-label">Class</label>
+                    <label for="class" class="form-label">Role</label>
                     <input type="text" class="form-control" id="class" name="class" value="{{ old('class') }}" required>
                 </div>
                 <div class="d-grid mb-3">
